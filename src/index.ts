@@ -6,8 +6,14 @@ import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 import cors from 'cors';
 
+const allowedOrigins = [
+  'http://localhost:3000', // Local frontend
+  'https://studio.apollographql.com', // Apollo Sandbox
+  // Add your production frontend domain here when available
+];
+
 const app = express();
-app.use(cors());
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
 const server = new ApolloServer({ typeDefs, resolvers });
