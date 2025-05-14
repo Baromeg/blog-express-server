@@ -1,17 +1,24 @@
 import { sequelize } from '../database/index.js';
 import { User, UserRole } from '../models/user.model.js';
 import { Post } from '../models/post.model.js';
+import { AuthService } from '../services/auth.service.js';
 
 async function seed() {
   try {
     await sequelize.sync({ force: true });
     console.log('Database synced');
 
+    const adminPassword = process.env.ADMIN_ROLE_PASSWORD;
+    if (!adminPassword) {
+      throw new Error('Missing required environment variable: ADMIN_ROLE_PASSWORD');
+    }
+
+    const hashedPassword = await AuthService.hashPassword(adminPassword);
+
     const user = await User.create({
       role: UserRole.ADMIN,
       email: 'admin@example.com',
-      hashedPassword: 'hashed_password',
-      refreshToken: 'initial_refresh_token',
+      hashedPassword: hashedPassword,
     });
 
     console.log('User created:', user.toJSON());
