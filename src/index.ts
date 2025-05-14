@@ -5,7 +5,7 @@ import { ApolloServer } from '@apollo/server';
 import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 import cors from 'cors';
-import { sequelize } from './database/indext.js';
+import { sequelize } from './database/index.js';
 
 const allowedOrigins = [
   'http://localhost:3000', // Local frontend

@@ -1,5 +1,6 @@
-import { Column, DataType, Model, Table, HasMany } from 'sequelize-typescript';
+import { Column, DataType, Model, Table, HasMany, PrimaryKey, Default } from 'sequelize-typescript';
 import { Post } from './post.model.js';
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -7,20 +8,18 @@ export enum UserRole {
 }
 
 @Table({ tableName: 'users', timestamps: true })
-export class User extends Model<User> {
-  @Column({
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-    primaryKey: true,
-  })
-  id!: string;
+export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
+  id!: CreationOptional<string>;
 
   @Column({
     type: DataType.ENUM(...Object.values(UserRole)),
     allowNull: false,
     defaultValue: UserRole.USER,
   })
-  role!: UserRole;
+  role!: string;
 
   @Column({
     type: DataType.STRING,
@@ -42,5 +41,5 @@ export class User extends Model<User> {
   refreshToken?: string;
 
   @HasMany(() => Post)
-  posts!: Post[];
+  posts!: CreationOptional<Post[]>;
 }

@@ -7,11 +7,8 @@ dev: ## Start app in live-reload mode
 stop: ## Stop and remove containers
 	docker-compose down
 
-generate: ## Generate Prisma client
-	docker-compose exec api pnpm prisma generate
-
-migrate: ## Run initial Prisma migration
-	docker-compose exec api pnpm prisma:migrate --name init
+seed:
+	docker-compose exec api pnpm run seed
 
 test: ## Run unit tests
 	docker-compose exec api pnpm test

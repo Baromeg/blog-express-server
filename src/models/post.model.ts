@@ -1,14 +1,22 @@
-import { Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  Default,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
 import { User } from './user.model.js';
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
 
 @Table({ tableName: 'posts', timestamps: true })
-export class Post extends Model<Post> {
-  @Column({
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-    primaryKey: true,
-  })
-  id!: string;
+export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
+  @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
+  id!: CreationOptional<string>;
 
   @Column({
     type: DataType.STRING,
@@ -28,4 +36,7 @@ export class Post extends Model<Post> {
     allowNull: false,
   })
   userId!: string;
+
+  @BelongsTo(() => User)
+  user!: CreationOptional<User>;
 }
