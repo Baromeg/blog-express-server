@@ -5,6 +5,7 @@ import { ApolloServer } from '@apollo/server';
 import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 import cors from 'cors';
+import { sequelize } from './database/indext.js';
 
 const allowedOrigins = [
   'http://localhost:3000', // Local frontend
@@ -13,6 +14,9 @@ const allowedOrigins = [
 ];
 
 const app = express();
+await sequelize.sync();
+console.log('Database synced');
+
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
