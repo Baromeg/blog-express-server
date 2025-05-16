@@ -33,7 +33,7 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
-    command: pnpm run start:dev
+    command: npx nodemon --watch src --exec "node --loader ts-node/esm src/index.ts"
     volumes:
       - .:/app
       - /app/node_modules

@@ -1,7 +1,7 @@
 import { sequelize } from '../database/index.js';
 import { User, UserRole } from '../models/user.model.js';
 import { Post } from '../models/post.model.js';
-import { AuthService } from '../services/auth.service.js';
+import { HashService } from '../utils/hash.service.js';
 
 async function seed() {
   try {
@@ -13,7 +13,7 @@ async function seed() {
       throw new Error('Missing required environment variable: ADMIN_ROLE_PASSWORD');
     }
 
-    const hashedPassword = await AuthService.hashPassword(adminPassword);
+    const hashedPassword = await HashService.hash(adminPassword);
 
     const user = await User.create({
       role: UserRole.ADMIN,

@@ -14,24 +14,29 @@ const allowedOrigins = [
 ];
 
 const app = express();
-await sequelize.sync();
-console.log('Database synced');
 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
-app.use(express.json());
+async function startServer() {
+  await sequelize.sync();
+  console.log('Database synced');
 
-const server = new ApolloServer({ typeDefs, resolvers });
+  app.use(cors({ origin: allowedOrigins, credentials: true }));
+  app.use(express.json());
 
-await server.start();
+  const server = new ApolloServer({ typeDefs, resolvers });
 
-app.use('/graphql', expressMiddleware(server, { context: async ({ req }) => ({}) }));
+  await server.start();
 
-app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).send({ status: 'ok' });
-});
+  app.use('/graphql', expressMiddleware(server, { context: async ({ req }) => ({}) }));
 
-const PORT = parseInt(process.env.PORT || '3000', 10);
+  app.get('/health', (_req: Request, res: Response) => {
+    res.status(200).send({ status: 'ok' });
+  });
 
-app.listen(PORT, (): void => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+  const PORT = parseInt(process.env.PORT || '3000', 10);
+
+  app.listen(PORT, (): void => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer();

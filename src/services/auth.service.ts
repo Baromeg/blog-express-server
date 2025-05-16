@@ -1,11 +1,30 @@
-import argon2 from 'argon2';
+import { User, UserRole } from '../models/user.model.js';
+import { HashService } from '../utils/hash.service.js';
+import { JwtService } from '../utils/jwt.service.js';
 
 export class AuthService {
-  static async hashPassword(password: string): Promise<string> {
-    return await argon2.hash(password, { type: argon2.argon2id });
+  static async register(email: string, password: string): Promise<User> {
+    const existingUser = await User.findOne({ where: { email } });
+
+    if (existingUser) {
+      throw new Error('Email already in use');
+    }
+
+    const hashedPassword = await HashService.hash(password);
+    return User.create({
+      email,
+      hashedPassword,
+      role: UserRole.USER,
+      createdAt: new Date(),
+    });
   }
 
-  static async verifyPassword(hashedPassword: string, password: string): Promise<boolean> {
-    return await argon2.verify(hashedPassword, password);
+  static async login(email: string, password: string): Promise<string> {
+    const user = await User.findOne({ where: { email } });
+    if (!user || !(await HashService.verify(user.hashedPassword, password))) {
+      throw new Error('Invalid email or password');
+    }
+
+    return JwtService.generateToken({ userId: user.id, role: user.role });
   }
 }
