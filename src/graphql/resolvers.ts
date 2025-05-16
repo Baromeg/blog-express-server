@@ -1,3 +1,4 @@
+import { Context } from '../context.js';
 import { Post } from '../models/post.model.js';
 import { User } from '../models/user.model.js';
 import { AuthService } from '../services/auth.service.js';
@@ -11,6 +12,12 @@ export const resolvers = {
     posts: async () => Post.findAll(),
     post: async (_: any, { id }: { id: string }) => {
       return Post.findByPk(id);
+    },
+    me: async (_parent: any, _args: any, context: Context) => {
+      if (!context.user) {
+        throw new Error('Not authenticated');
+      }
+      return context.user;
     },
   },
   Mutation: {

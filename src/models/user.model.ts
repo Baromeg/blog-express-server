@@ -19,7 +19,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
     allowNull: false,
     defaultValue: UserRole.USER,
   })
-  role!: string;
+  role!: UserRole;
 
   @Column({
     type: DataType.STRING,
