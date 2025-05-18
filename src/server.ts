@@ -7,10 +7,12 @@ import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 import { buildContext, GraphQLContext } from './context.js';
 import 'dotenv/config';
+import http from 'http';
+import { AddressInfo } from 'net';
 
 const allowedOrigins = ['http://localhost:3000', 'https://studio.apollographql.com'];
 
-export async function startServer() {
+export async function startServer(port = 3000): Promise<http.Server> {
   await sequelize.sync();
   console.log('Database synced');
 
@@ -18,14 +20,16 @@ export async function startServer() {
   app.use(cors({ origin: allowedOrigins, credentials: true }));
   app.use(express.json());
 
-  const server = new ApolloServer<GraphQLContext>({ typeDefs, resolvers });
-  await server.start();
+  const apolloServer = new ApolloServer<GraphQLContext>({ typeDefs, resolvers });
+  await apolloServer.start();
 
-  app.use('/graphql', expressMiddleware<GraphQLContext>(server, { context: buildContext }));
+  app.use('/graphql', expressMiddleware<GraphQLContext>(apolloServer, { context: buildContext }));
   app.get('/health', (_req, res) => res.status(200).send({ status: 'ok' }));
 
-  const PORT = parseInt(process.env.PORT || '3000', 10);
-  app.listen(PORT, () => {
-    console.log(`🚀 Server ready at http://localhost:${PORT}`);
+  return new Promise((resolve) => {
+    const listener = app.listen(port, () => {
+      console.log(`Server listening on ${(listener.address() as AddressInfo).port}`);
+      resolve(listener);
+    });
   });
 }
