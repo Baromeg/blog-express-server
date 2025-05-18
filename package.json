@@ -8,7 +8,8 @@
     "build": "tsc",
     "seed": "node --loader ts-node/esm src/scripts/seed.ts",
     "start": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "graphql-codegen"
   },
   "keywords": [],
   "author": "Baltasar Romero",
@@ -31,6 +32,9 @@
   },
   "devDependencies": {
     "-": "^0.0.1",
+    "@graphql-codegen/cli": "^5.0.6",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.18",
     "@types/express": "^4.17.21",

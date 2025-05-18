@@ -33,6 +33,7 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
+      ADMIN_ROLE_PASSWORD: ${ADMIN_ROLE_PASSWORD}
     command: npx nodemon --watch src --exec "node --loader ts-node/esm src/index.ts"
     volumes:
       - .:/app
