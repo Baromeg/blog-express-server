@@ -1,27 +1,29 @@
 import { Request } from 'express';
 import { User } from './models/user.model.js';
 import { JwtService } from './utils/jwt.service.js';
+import { createUserLoader } from './loaders/user.loader.js';
+import { JwtPayload } from './types/jwt-payload.js';
 
-export interface Context {
-  user?: User;
+export interface GraphQLContext {
+  req: Request;
+  user?: User | null;
+  loaders: {
+    userLoader: ReturnType<typeof createUserLoader>;
+  };
 }
 
-export async function buildContext({ req }: { req: Request }): Promise<Context> {
+export async function buildContext({ req }: { req: Request }): Promise<GraphQLContext> {
   const authHeader = req.headers.authorization || '';
-  const token = authHeader.replace('Bearer ', '');
+  const token = authHeader.startsWith('Bearer ') ? authHeader.replace('Bearer ', '') : null;
 
-  if (!token) {
-    return {};
-  }
+  let user: User | null = null;
 
-  const payload = JwtService.verifyToken(token);
-
-  if (payload && payload.userId) {
-    const user = await User.findByPk(payload.userId);
-    if (user) {
-      return { user };
+  if (token) {
+    const payload = JwtService.verifyToken(token) as JwtPayload | null;
+    if (payload && payload.userId) {
+      user = await User.findByPk(payload.userId);
     }
   }
 
-  return {};
+  return { req, user, loaders: { userLoader: createUserLoader() } };
 }

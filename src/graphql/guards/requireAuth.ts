@@ -1,7 +1,7 @@
-import { Context } from '../../context.js';
+import { GraphQLContext } from '../../context.js';
 import { UserRole } from '../../models/user.model.js';
 
-export function requireAuth(context: Context, requiredRole?: UserRole) {
+export function requireAuth(context: GraphQLContext, requiredRole?: UserRole) {
   const user = context.user;
   if (!user) {
     throw new Error('Not authenticated');

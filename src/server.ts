@@ -5,7 +5,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { sequelize } from './database/index.js';
 import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
-import { buildContext, Context } from './context.js';
+import { buildContext, GraphQLContext } from './context.js';
 import 'dotenv/config';
 
 const allowedOrigins = ['http://localhost:3000', 'https://studio.apollographql.com'];
@@ -18,10 +18,10 @@ export async function startServer() {
   app.use(cors({ origin: allowedOrigins, credentials: true }));
   app.use(express.json());
 
-  const server = new ApolloServer<Context>({ typeDefs, resolvers });
+  const server = new ApolloServer<GraphQLContext>({ typeDefs, resolvers });
   await server.start();
 
-  app.use('/graphql', expressMiddleware<Context>(server, { context: buildContext }));
+  app.use('/graphql', expressMiddleware<GraphQLContext>(server, { context: buildContext }));
   app.get('/health', (_req, res) => res.status(200).send({ status: 'ok' }));
 
   const PORT = parseInt(process.env.PORT || '3000', 10);
