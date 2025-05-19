@@ -17,9 +17,33 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
+  api_dev:
     build: .
-    container_name: blog_api
+    container_name: blog_api_dev
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PORT: ${DB_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_ROLE_PASSWORD: ${ADMIN_ROLE_PASSWORD}
+    command: npx nodemon --watch src --exec "node --loader ts-node/esm src/index.ts"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  api_prod:
+    build: .
+    container_name: blog_api_prod
     restart: unless-stopped
     depends_on:
       - db
@@ -38,6 +62,5 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-
 volumes:
   postgres_data:

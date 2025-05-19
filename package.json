@@ -9,10 +9,7 @@
     "seed": "node --loader ts-node/esm src/scripts/seed.ts",
     "start": "node dist/index.js",
     "generate": "graphql-codegen",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "Baltasar Romero",

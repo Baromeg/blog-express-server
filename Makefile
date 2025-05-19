@@ -1,17 +1,16 @@
-start: ## Start all services in background
-	docker-compose up -d --build
+start: ## Run production build
+	docker build --target prod -t express-server-api .
+	docker-compose up -d api db
 
-dev: ## Start app in live-reload mode
-	docker-compose up
+dev: ## Run development build with live reload
+	docker build --target dev -t express-server-api .
+	docker-compose up api db
 
-stop: ## Stop and remove containers
+stop: ## Stop all running services
 	docker-compose down
 
-seed:
+seed: ## Seed the database
 	docker-compose exec api pnpm run seed
 
 test: ## Run unit tests
-	docker-compose exec api pnpm test
-
-teste2e: ## Run end-to-end tests
-	docker-compose exec api pnpm test:e2e
+	docker-compose exec api pnpm run test

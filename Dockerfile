@@ -1,20 +1,42 @@
-# Use Node.js LTS version
-FROM node:20-alpine
+# Development stage
+FROM node:22-alpine AS dev
 
-# Set working directory
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 WORKDIR /app
 
-# Copy all project files into the container
 COPY . .
 
-# Install pnpm globally and project dependencies
-RUN npm install -g pnpm && pnpm install
+RUN pnpm install
 
-# Build TypeScript project
-RUN pnpm build
-
-# Expose the port your app runs on
 EXPOSE 3000
 
-# Build the app
 CMD ["pnpm", "start:dev"]
+
+
+# Build stage
+FROM node:22-alpine AS build
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+COPY . .
+
+RUN pnpm install --frozen-lockfile && pnpm build
+
+
+# Production stage
+FROM node:20-alpine AS prod
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./
+
+EXPOSE 3000
+
+CMD ["node", "dist/index.js"]
